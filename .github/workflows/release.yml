@@ -60,9 +60,6 @@ jobs:
       - name: Approve build scripts
         run: pnpm approve-builds
 
-      - name: Install frontend dependencies
-        run: pnpm install
-
       - name: Install deno
         uses: denoland/setup-deno@v2
         with:
