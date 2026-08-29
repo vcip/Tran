@@ -60,7 +60,7 @@ jobs:
       - name: Install frontend dependencies
         run: |
           pnpm config set "build.allow-scripts" all --local
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
 
       - name: Install deno
         uses: denoland/setup-deno@v2
