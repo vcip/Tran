@@ -12,12 +12,12 @@
   },
   "license": "GPLv3",
   "dependencies": {
-    "@tauri-apps/api": "2.11.4",
+    "@tauri-apps/api": "2.11.1",
     "solid-js": "^1.9.9",
     "solid-spinner": "^0.2.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.11.4",
+    "@tauri-apps/cli": "2.11.1",
     "@types/node": "^24.4.0",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
