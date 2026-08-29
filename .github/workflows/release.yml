@@ -59,8 +59,9 @@ jobs:
 
       - name: Install frontend dependencies
         run: |
-          pnpm config set "build.allow-scripts" all
-          pnpm install --frozen-lockfile
+          pnpm approve-builds esbuild
+          # or approve everything pending
+          pnpm approve-builds --all
 
       - name: Install deno
         uses: denoland/setup-deno@v2
