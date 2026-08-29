@@ -73,6 +73,9 @@ jobs:
           MATRIX_LANG: ${{ matrix.lang }}
         run: deno run -A  script/lang.ts
 
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+
       - name: Build
         uses: tauri-apps/tauri-action@v0
         env:
