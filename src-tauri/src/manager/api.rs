@@ -45,7 +45,15 @@ pub async fn translate(content: &str) -> Result<TransVO> {
     } else {
         "https://translate.googleapis.com".to_string()
     };
-    send(&CLIENT, host, &lang, &content).await
+    let client = config::proxy().trim().to_string();
+    if client.is_empty() {
+        send(&CLIENT, host, &lang, &content).await
+    } else {
+        let client = Client::builder()
+            .proxy(reqwest::Proxy::all(client)?)
+            .build()?;
+        send(&client, host, &lang, &content).await
+    }
 }
 
 async fn send(client: &Client, host: String, lang: &str, content: &str) -> Result<TransVO> {

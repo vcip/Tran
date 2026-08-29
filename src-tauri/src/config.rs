@@ -27,6 +27,12 @@ pub struct Config {
     /// Theme
     #[serde(default = "theme_default")]
     pub theme: String,
+
+    /// HTTP 代理地址, 为空时不使用代理
+    ///
+    /// HTTP proxy URL, empty means no proxy
+    #[serde(default)]
+    pub proxy: String,
 }
 
 fn mode_default() -> bool {
@@ -99,6 +105,13 @@ pub fn key() -> u8 {
 /// get theme
 pub fn theme() -> String {
     CONFIG.lock().theme.clone()
+}
+
+/// 获取代理地址
+///
+/// get proxy URL
+pub fn proxy() -> String {
+    CONFIG.lock().proxy.clone()
 }
 
 /// 切换模式
