@@ -5,7 +5,7 @@
   "build": {
     "beforeDevCommand": "bun dev",
     "devUrl": "http://localhost:5046",
-    "beforeBuildCommand": "bun build ../src/index.tsx --outdir ../dist",
+    "beforeBuildCommand": "cd .. && bun build src/index.tsx --outdir dist",
     "frontendDist": "../dist"
   },
   "app": {
