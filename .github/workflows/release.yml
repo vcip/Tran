@@ -47,7 +47,7 @@ jobs:
           node-version: 24
 
       - name: Install Rust latest
-        uses: dtolnay/rust-toolchain@latest
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Install dependencies
         uses: ilammy/msvc-dev-cmd@v1
