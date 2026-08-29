@@ -46,8 +46,8 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install Rust nightly
-        uses: dtolnay/rust-toolchain@nightly
+      - name: Install Rust latest
+        uses: dtolnay/rust-toolchain@latest
 
       - name: Install dependencies
         uses: ilammy/msvc-dev-cmd@v1
