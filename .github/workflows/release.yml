@@ -58,8 +58,9 @@ jobs:
           version: latest
 
       - name: Install frontend dependencies
-        run: |
+        run:
           pnpm config set "confirmModulesPurge" false
+          pnpm config set "build.allow-scripts" true
           pnpm install
           pnpm approve-builds
 
