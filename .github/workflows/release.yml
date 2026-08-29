@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lang: [zh_en, zh_ja, ja_zh]
+        lang: [zh_en]
 
     runs-on: windows-latest
     steps:
@@ -58,7 +58,10 @@ jobs:
           version: latest
 
       - name: Install frontend dependencies
-        run: pnpm install
+        run: |
+          pnpm config set "confirmModulesPurge" false
+          pnpm install
+          pnpm approve-builds
 
       - name: Install deno
         uses: denoland/setup-deno@v2
