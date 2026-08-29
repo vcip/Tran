@@ -61,6 +61,7 @@ jobs:
         run: |
           pnpm config set "build.allow-scripts" all --local
           pnpm install --no-frozen-lockfile
+          pnpm install --frozen-lockfile
 
       - name: Install deno
         uses: denoland/setup-deno@v2
