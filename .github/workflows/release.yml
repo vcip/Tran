@@ -59,9 +59,8 @@ jobs:
 
       - name: Install frontend dependencies
         run: |
-          pnpm config set "build.allow-scripts" true --local
+          pnpm config set "build.allow-scripts" all --local
           pnpm install
-          pnpm approve-builds
 
       - name: Install deno
         uses: denoland/setup-deno@v2
