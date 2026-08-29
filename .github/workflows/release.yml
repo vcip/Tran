@@ -58,7 +58,7 @@ jobs:
           version: latest
 
       - name: Install frontend dependencies
-        run:
+        run: |
           pnpm config set "build.allow-scripts" true --local
           pnpm install
           pnpm approve-builds
