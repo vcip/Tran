@@ -23,3 +23,25 @@ pub fn panel(app: &AppHandle) {
     .build()
     .expect("Failed to create panel window");
 }
+
+pub fn settings(app: &AppHandle) {
+    tauri::WebviewWindowBuilder::new(
+        app,
+        "settings",
+        tauri::WebviewUrl::App(PathBuf::from("settings.html")),
+    )
+    .title("Tran Settings")
+    .inner_size(420.0, 220.0)
+    .fullscreen(false)
+    .resizable(false)
+    .minimizable(false)
+    .maximizable(false)
+    .decorations(true)
+    .always_on_top(false)
+    .skip_taskbar(false)
+    .visible(false)
+    .shadow(true)
+    .center()
+    .build()
+    .expect("Failed to create settings window");
+}

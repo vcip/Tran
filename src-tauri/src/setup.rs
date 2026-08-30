@@ -20,6 +20,11 @@ pub fn handler(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
     // 初始化窗口
     // Initialize the window
     window::panel(handle);
+    window::settings(handle);
+    let settings = app
+        .get_webview_window("settings")
+        .expect("Failed to get settings window");
+    let _ = settings.hide();
 
     // 初始化托盘
     // Initialize the tray

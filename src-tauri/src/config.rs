@@ -121,7 +121,15 @@ pub fn theme() -> String {
 ///
 /// get proxy URL
 pub fn proxy() -> String {
-    CONFIG.lock().proxy.clone()
+    CONFIG.lock().proxy.trim().to_string()
+}
+
+/// 设置代理地址
+///
+/// set proxy URL
+pub fn set_proxy(proxy: &str) {
+    CONFIG.lock().proxy = proxy.trim().to_string();
+    save().expect("Failed to save config after switch proxy");
 }
 
 /// 获取翻译服务地址

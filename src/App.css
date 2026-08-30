@@ -137,6 +137,88 @@
     cursor: pointer;
 }
 
+.settings-window {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 18px 18px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--pannel-background-color);
+    color: var(--pannel-text-color);
+    font-family: 'FiraCode Nerd Font Mono', 'LXGW WenKai Mono', 'LXGW WenKai', monospace;
+}
+
+.settings-header {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.settings-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.settings-input-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.settings-input {
+    flex: 1;
+    min-width: 0;
+    height: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--pannel-text-color);
+    padding: 0 10px;
+    outline: none;
+}
+
+.settings-small-btn,
+.settings-cancel,
+.settings-save {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 7px 10px;
+}
+
+.settings-small-btn {
+    background: var(--dict-term-background-color);
+    color: var(--pannel-text-color);
+}
+
+.settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.settings-cancel {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--pannel-text-color);
+}
+
+.settings-save {
+    background: var(--dict-pos-background-color);
+    color: var(--dict-pos-text-color);
+    font-weight: 700;
+}
+
 :root {
     --pannel-background-color: #1e2227;
     --pannel-text-color: #ffffff;

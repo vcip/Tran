@@ -72,6 +72,14 @@ async fn host() -> R<String> {
     R::success(config::host())
 }
 
+/// 获取当前代理地址
+///
+/// Get current proxy URL
+#[tauri::command]
+async fn proxy() -> R<String> {
+    R::success(config::proxy())
+}
+
 /// 获取当前模式
 ///
 /// Get current mode
@@ -86,6 +94,15 @@ async fn mode() -> R<bool> {
 #[tauri::command]
 async fn set_host(host: String) -> R<()> {
     config::set_host(&host);
+    R::success(())
+}
+
+/// 设置代理地址
+///
+/// Set proxy URL
+#[tauri::command]
+async fn set_proxy(proxy: String) -> R<()> {
+    config::set_proxy(&proxy);
     R::success(())
 }
 
@@ -108,7 +125,18 @@ async fn main() {
         .plugin(tauri_plugin_single_instance::init(|_, _, _| {}))
         .setup(setup::handler)
         .invoke_handler(tauri::generate_handler![
-            copy, open, pin, unpin, untmp, theme, host, set_host, mode, set_mode
+            copy,
+            open,
+            pin,
+            unpin,
+            untmp,
+            theme,
+            host,
+            proxy,
+            set_host,
+            set_proxy,
+            mode,
+            set_mode
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

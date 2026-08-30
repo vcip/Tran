@@ -5,7 +5,7 @@ use tauri::{
     AppHandle, Manager, Wry,
 };
 
-use crate::{config, util};
+use crate::{config, util, window};
 
 /// 初始化托盘菜单
 ///
@@ -32,8 +32,7 @@ fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
     let google = CheckMenuItem::with_id(handle, "google", "Google", true, !f, None::<&str>)?;
     let mode = Submenu::with_items(handle, "Mode", true, &[&mirror, &google])?;
 
-    let google_host = MenuItem::with_id(handle, "host-google", "Google Default Host", true, None::<&str>)?;
-    let host = Submenu::with_items(handle, "Host", true, &[&google_host])?;
+    let settings = MenuItem::with_id(handle, "settings", "Settings...", true, None::<&str>)?;
 
     let shift = CheckMenuItem::with_id(handle, "shift", "Shift", true, k == 0, None::<&str>)?;
     let ctrl = CheckMenuItem::with_id(handle, "ctrl", "Ctrl", true, k == 1, None::<&str>)?;
@@ -47,10 +46,16 @@ fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
 
     let github = MenuItem::with_id(handle, "github", "GitHub", true, None::<&str>)?;
     let telegram = MenuItem::with_id(handle, "telegram", "Telegram", true, None::<&str>)?;
-    let version = MenuItem::with_id(handle, "version", "Latest", true, None::<&str>)?;
-    let about = Submenu::with_items(handle, "About", true, &[&github, &telegram, &version])?;
+    let version = MenuItem::with_id(
+        handle,
+        "version",
+        &format!("v{}", env!("CARGO_PKG_VERSION")),
+        false,
+        None::<&str>,
+    )?;
+    let about = Submenu::with_items(handle, "About", true, &[&version, &github, &telegram])?;
     let exit = MenuItem::with_id(handle, "exit", "Exit", true, None::<&str>)?;
-    Menu::with_items(handle, &[&mode, &host, &key, &theme, &about, &exit])
+    Menu::with_items(handle, &[&mode, &key, &theme, &settings, &about, &exit])
         .map_err(|_| anyhow::anyhow!("Failed to create menu"))
 }
 
@@ -69,8 +74,15 @@ fn handler(app: &AppHandle, event: MenuEvent) {
         "google" => {
             config::set_mode(false);
         }
-        "host-google" => {
-            config::set_host("https://translate.googleapis.com");
+        "settings" => {
+            if let Some(window) = app.get_webview_window("settings") {
+                let _ = window.show();
+                let _ = window.set_focus();
+            } else {
+                window::settings(app);
+                let _ = app.get_webview_window("settings").unwrap().show();
+                let _ = app.get_webview_window("settings").unwrap().set_focus();
+            }
         }
         "shift" => {
             config::set_key(0);
@@ -93,9 +105,7 @@ fn handler(app: &AppHandle, event: MenuEvent) {
         "telegram" => {
             let _ = open::that("https://t.me/tran_rust");
         }
-        "version" => {
-            let _ = open::that("https://github.com/Borber/Tran/releases/latest");
-        }
+        "version" => {}
         "exit" => {
             let panel = app.get_webview_window("panel").unwrap();
             let _ = panel.hide();
