@@ -6,16 +6,11 @@ import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
 import { createSignal, For, Match, onMount, Show, Switch } from "solid-js"
 import { ThreeDots } from "solid-spinner"
 
-import { UpdateIcon } from "./icon"
 import { Resp, TransVO } from "./model/resp"
 
 const App = () => {
     const panel = getCurrentWebviewWindow()
     const [result, Result] = createSignal<TransVO>()
-    const [update, Update] = createSignal(false)
-    const [host, setHost] = createSignal("https://translate.googleapis.com")
-    const [mode, setMode] = createSignal(true)
-    const [showHostInput, setShowHostInput] = createSignal(false)
 
     const close = async () => {
         await panel.hide()
@@ -48,16 +43,6 @@ const App = () => {
             return pos.data
         })
         document.documentElement.setAttribute("data-theme", theme)
-
-        let currentHost = await invoke<Resp<string>>("host").then((pos) => {
-            return pos.data
-        })
-        setHost(currentHost || "https://translate.googleapis.com")
-
-        let currentMode = await invoke<Resp<boolean>>("mode").then((pos) => {
-            return pos.data
-        })
-        setMode(currentMode)
 
         // 监听更改主题事件
         // Listen to change theme events
@@ -148,32 +133,7 @@ const App = () => {
             }
         })
 
-        await fetch("https://key.borber.top/TRAN_VERSION").then(
-            async (resp) => {
-                const version = await resp.text()
-                Update(version != "0.2.19")
-            }
-        )
     })
-
-    const saveHost = async () => {
-        const value = host().trim()
-        if (!value) {
-            return
-        }
-        await invoke("set_host", {
-            host: value,
-        })
-        setHost(value)
-        setShowHostInput(false)
-    }
-
-    const toggleMode = async (nextMode: boolean) => {
-        setMode(nextMode)
-        await invoke("set_mode", {
-            mode: nextMode,
-        })
-    }
 
     return (
         <div class="panel" data-tauri-drag-region>
@@ -243,57 +203,6 @@ const App = () => {
                     </Match>
                 </Switch>
             </div>
-            <div class="toolbar">
-                <button
-                    class="settings-toggle"
-                    onClick={() => setShowHostInput((value) => !value)}
-                >
-                    ⚙
-                </button>
-                <Show when={showHostInput()}>
-                    <div class="settings-box">
-                        <input
-                            class="host-input"
-                            value={host()}
-                            onInput={(e) =>
-                                setHost(
-                                    (e.currentTarget as HTMLInputElement).value
-                                )
-                            }
-                            placeholder="https://translate.googleapis.com"
-                        />
-                        <button class="save-host" onClick={saveHost}>
-                            OK
-                        </button>
-                        <div class="mode-toggle">
-                            <button
-                                classList={{ active: mode() }}
-                                onClick={() => toggleMode(true)}
-                            >
-                                Mirror
-                            </button>
-                            <button
-                                classList={{ active: !mode() }}
-                                onClick={() => toggleMode(false)}
-                            >
-                                Google
-                            </button>
-                        </div>
-                    </div>
-                </Show>
-            </div>
-            <Show when={update()}>
-                <div
-                    class="update"
-                    onClick={async () => {
-                        await invoke("open", {
-                            url: "https://github.com/Borber/tran/releases/latest",
-                        })
-                    }}
-                >
-                    <UpdateIcon size={20} />
-                </div>
-            </Show>
         </div>
     )
 }

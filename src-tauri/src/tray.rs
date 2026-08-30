@@ -32,6 +32,9 @@ fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
     let google = CheckMenuItem::with_id(handle, "google", "Google", true, !f, None::<&str>)?;
     let mode = Submenu::with_items(handle, "Mode", true, &[&mirror, &google])?;
 
+    let google_host = MenuItem::with_id(handle, "host-google", "Google Default Host", true, None::<&str>)?;
+    let host = Submenu::with_items(handle, "Host", true, &[&google_host])?;
+
     let shift = CheckMenuItem::with_id(handle, "shift", "Shift", true, k == 0, None::<&str>)?;
     let ctrl = CheckMenuItem::with_id(handle, "ctrl", "Ctrl", true, k == 1, None::<&str>)?;
     let caps = CheckMenuItem::with_id(handle, "caps", "Caps", true, k == 2, None::<&str>)?;
@@ -44,10 +47,10 @@ fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
 
     let github = MenuItem::with_id(handle, "github", "GitHub", true, None::<&str>)?;
     let telegram = MenuItem::with_id(handle, "telegram", "Telegram", true, None::<&str>)?;
-    let version = MenuItem::with_id(handle, "version", "v0.2.19", false, None::<&str>)?;
+    let version = MenuItem::with_id(handle, "version", "Latest", true, None::<&str>)?;
     let about = Submenu::with_items(handle, "About", true, &[&github, &telegram, &version])?;
     let exit = MenuItem::with_id(handle, "exit", "Exit", true, None::<&str>)?;
-    Menu::with_items(handle, &[&mode, &key, &theme, &about, &exit])
+    Menu::with_items(handle, &[&mode, &host, &key, &theme, &about, &exit])
         .map_err(|_| anyhow::anyhow!("Failed to create menu"))
 }
 
@@ -65,6 +68,9 @@ fn handler(app: &AppHandle, event: MenuEvent) {
         }
         "google" => {
             config::set_mode(false);
+        }
+        "host-google" => {
+            config::set_host("https://translate.googleapis.com");
         }
         "shift" => {
             config::set_key(0);
@@ -86,6 +92,9 @@ fn handler(app: &AppHandle, event: MenuEvent) {
         }
         "telegram" => {
             let _ = open::that("https://t.me/tran_rust");
+        }
+        "version" => {
+            let _ = open::that("https://github.com/Borber/Tran/releases/latest");
         }
         "exit" => {
             let panel = app.get_webview_window("panel").unwrap();
