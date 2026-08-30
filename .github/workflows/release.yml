@@ -119,7 +119,7 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             echo "VERSION=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
           else
-            echo "VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
+            echo "VERSION=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Upload release assets
