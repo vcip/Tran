@@ -55,19 +55,17 @@ const Settings = () => {
         }
         setSavedHost(nextHost)
         setSavedProxy(nextProxy)
-        setStatus("Saved")
+        setStatus("配置已保存")
         setTimeout(async () => {
+            setStatus("")
             await window.hide()
-        }, 300)
+        }, 1000)
     }
 
     const cancel = async () => {
         setHost(savedHost())
         setProxy(savedProxy())
-        setStatus("Cancelled")
-        setTimeout(async () => {
-            await window.hide()
-        }, 300)
+        await window.hide()
     }
 
     const resetHost = () => {
