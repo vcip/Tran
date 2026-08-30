@@ -137,6 +137,17 @@
     cursor: pointer;
 }
 
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background: var(--pannel-background-color);
+}
+
 .settings-window {
     width: 100%;
     height: 100%;
@@ -148,6 +159,7 @@
     background: var(--pannel-background-color);
     color: var(--pannel-text-color);
     font-family: 'FiraCode Nerd Font Mono', 'LXGW WenKai Mono', 'LXGW WenKai', monospace;
+    overflow: hidden;
 }
 
 .settings-header {
@@ -204,8 +216,17 @@
 .settings-actions {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     gap: 8px;
     margin-top: auto;
+}
+
+.settings-status {
+    margin-right: auto;
+    min-width: 60px;
+    font-size: 11px;
+    color: var(--dict-pos-background-color);
+    opacity: 0.9;
 }
 
 .settings-cancel {

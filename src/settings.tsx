@@ -13,6 +13,7 @@ const Settings = () => {
         "https://translate.googleapis.com"
     )
     const [savedProxy, setSavedProxy] = createSignal("")
+    const [status, setStatus] = createSignal("")
 
     const reload = async () => {
         const currentHost = await invoke<string>("host")
@@ -38,13 +39,19 @@ const Settings = () => {
         await invoke("set_proxy", { proxy: nextProxy })
         setSavedHost(nextHost)
         setSavedProxy(nextProxy)
-        await window.hide()
+        setStatus("Saved")
+        setTimeout(async () => {
+            await window.hide()
+        }, 300)
     }
 
     const cancel = async () => {
         setHost(savedHost())
         setProxy(savedProxy())
-        await window.hide()
+        setStatus("Cancelled")
+        setTimeout(async () => {
+            await window.hide()
+        }, 300)
     }
 
     const resetHost = () => {
@@ -108,6 +115,7 @@ const Settings = () => {
             </div>
 
             <div class="settings-actions">
+                <div class="settings-status">{status()}</div>
                 <button class="settings-cancel" type="button" onClick={cancel}>
                     Cancel
                 </button>
