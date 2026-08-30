@@ -6,6 +6,10 @@ use tauri::{AppHandle, Emitter, Manager};
 
 use crate::{clip, common::SIMULATION, config};
 
+fn should_fallback_to_clipboard(fallback: bool) -> bool {
+    fallback || cfg!(windows)
+}
+
 /// 模拟获取复制文本
 ///
 /// Simulate getting copy text
@@ -20,8 +24,10 @@ pub fn content(fallback: bool) -> String {
     // Reset the simulation flag
     SIMULATION.store(false, Ordering::SeqCst);
 
-    if content.is_empty() && fallback {
-        // 获取系统剪贴板内容
+    if content.is_empty() && should_fallback_to_clipboard(fallback) {
+        // 当前环境下的 selection 处理可能为空，Windows 下需要兜底到剪贴板以保证划词翻译可用
+        // The selection backend can be empty in some environments; on Windows we should fallback
+        // to the system clipboard so word selection translations still work.
         match clip::get() {
             Ok(copy) => copy,
             Err(e) => {
@@ -31,6 +37,25 @@ pub fn content(fallback: bool) -> String {
         }
     } else {
         content
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::should_fallback_to_clipboard;
+
+    #[test]
+    fn windows_uses_clipboard_fallback_for_empty_selection() {
+        if cfg!(windows) {
+            assert!(should_fallback_to_clipboard(false));
+        }
+    }
+
+    #[test]
+    fn native_fallback_stays_opt_in_on_other_platforms() {
+        if !cfg!(windows) {
+            assert!(!should_fallback_to_clipboard(false));
+        }
     }
 }
 

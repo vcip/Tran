@@ -35,7 +35,7 @@ pub fn show(panel: &WebviewWindow, content: String) -> Result<()> {
         let position = Mouse::get_mouse_position();
         let (x, y) = match position {
             Mouse::Position { mut x, mut y } => {
-                #[cfg(target_os = "macos")]
+                #[cfg(any(target_os = "macos", target_os = "windows"))]
                 {
                     let monitor = panel
                         .current_monitor()

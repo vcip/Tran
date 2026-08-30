@@ -48,8 +48,14 @@ fastrand = "2"
 # For browser
 open = "5"
 
+[target.'cfg(target_os = "linux")'.dependencies]
 rdev = { git = "https://github.com/Narsil/rdev.git", features = ["x11"] }
 
+[target.'cfg(target_os = "windows")'.dependencies]
+rdev = { git = "https://github.com/Narsil/rdev.git" }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+rdev = { git = "https://github.com/Narsil/rdev.git" }
 
 [profile.release]
 opt-level = "z"

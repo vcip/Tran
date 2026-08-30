@@ -3,9 +3,9 @@
   "version": "0.2.19",
   "identifier": "com.borber.tran",
   "build": {
-    "beforeDevCommand": "bun dev",
+    "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:5046",
-    "beforeBuildCommand": "bun build src/index.tsx --outdir dist",
+    "beforeBuildCommand": "pnpm build",
     "frontendDist": "../dist"
   },
   "app": {
