@@ -6,7 +6,15 @@ import { createSignal, onMount } from "solid-js"
 import { render } from "solid-js/web"
 
 const Settings = () => {
-    const window = getCurrentWebviewWindow()
+    let window: any
+    try {
+        window = getCurrentWebviewWindow()
+    } catch {
+        // Browser preview fallback
+        window = {
+            addEventListener: () => {},
+        }
+    }
     const [host, setHost] = createSignal("https://translate.googleapis.com")
     const [proxy, setProxy] = createSignal("")
     const [savedHost, setSavedHost] = createSignal(
@@ -16,12 +24,16 @@ const Settings = () => {
     const [status, setStatus] = createSignal("")
 
     const reload = async () => {
-        const currentHost = await invoke<string>("host")
-        const currentProxy = await invoke<string>("proxy")
-        setHost(currentHost || "https://translate.googleapis.com")
-        setSavedHost(currentHost || "https://translate.googleapis.com")
-        setProxy(currentProxy || "")
-        setSavedProxy(currentProxy || "")
+        try {
+            const currentHost = await invoke<string>("host")
+            const currentProxy = await invoke<string>("proxy")
+            setHost(currentHost || "https://translate.googleapis.com")
+            setSavedHost(currentHost || "https://translate.googleapis.com")
+            setProxy(currentProxy || "")
+            setSavedProxy(currentProxy || "")
+        } catch (e) {
+            console.log("Browser preview mode - using default values")
+        }
     }
 
     onMount(async () => {
@@ -35,8 +47,12 @@ const Settings = () => {
         const nextHost = host().trim() || "https://translate.googleapis.com"
         const nextProxy = proxy().trim()
 
-        await invoke("set_host", { host: nextHost })
-        await invoke("set_proxy", { proxy: nextProxy })
+        try {
+            await invoke("set_host", { host: nextHost })
+            await invoke("set_proxy", { proxy: nextProxy })
+        } catch (e) {
+            console.log("Browser preview mode - skipping Tauri invoke")
+        }
         setSavedHost(nextHost)
         setSavedProxy(nextProxy)
         setStatus("Saved")

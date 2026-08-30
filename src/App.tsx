@@ -9,47 +9,85 @@ import { ThreeDots } from "solid-spinner"
 import { Resp, TransVO } from "./model/resp"
 
 const App = () => {
-    const panel = getCurrentWebviewWindow()
+    let panel: any
+    try {
+        panel = getCurrentWebviewWindow()
+    } catch {
+        // Browser preview fallback
+        panel = {
+            hide: async () => {},
+            show: async () => {},
+        }
+    }
     const [result, Result] = createSignal<TransVO>()
 
     const close = async () => {
         await panel.hide()
-        await invoke("unpin")
+        try {
+            await invoke("unpin")
+        } catch (e) {
+            console.log("Browser preview mode")
+        }
         Result(undefined)
     }
 
     const copy = async (content: string) => {
-        await invoke("copy", {
-            content,
-        })
+        try {
+            await invoke("copy", {
+                content,
+            })
 
-        let pin = await invoke<Resp<boolean>>("pin").then((pos) => {
-            return pos.data
-        })
+            let pin = await invoke<Resp<boolean>>("pin").then((pos) => {
+                return pos.data
+            })
 
-        // 未固定则直接关闭
-        // Unfixed, close directly
-        if (!pin) {
-            await close()
+            // 未固定则直接关闭
+            // Unfixed, close directly
+            if (!pin) {
+                await close()
+            }
+        } catch (e) {
+            console.log("Browser preview mode")
         }
     }
 
     onMount(async () => {
         const RESULT = document.getElementById("result") as HTMLElement
 
-        // 主题
-        // Theme
-        let theme = await invoke<Resp<string>>("theme").then((pos) => {
-            return pos.data
-        })
-        document.documentElement.setAttribute("data-theme", theme)
+        try {
+            // 主题
+            // Theme
+            let theme = await invoke<Resp<string>>("theme").then((pos) => {
+                return pos.data
+            })
+            document.documentElement.setAttribute("data-theme", theme)
 
-        // 监听更改主题事件
-        // Listen to change theme events
-        await listen<string>("theme", (event) => {
-            console.log(event)
-            document.documentElement.setAttribute("data-theme", event.payload)
-        })
+            // 监听更改主题事件
+            // Listen to change theme events
+            await listen<string>("theme", (event) => {
+                console.log(event)
+                document.documentElement.setAttribute("data-theme", event.payload)
+            })
+
+            // 监听事件， 显示翻译结果
+            // Listen to events and display panel
+            await listen<Resp<TransVO>>("show", async (pos) => {
+                Result(pos.payload.data)
+                // 滚动到顶部
+                RESULT.scrollTop = 0
+                // 显示完成后取消临时固定
+                // After displaying, cancel temporary pin
+                await invoke("untmp")
+            })
+
+            // 监听事件，清空翻译结果
+            // Listen to events and clear translation results
+            await listen("reset", async () => {
+                Result(undefined)
+            })
+        } catch (e) {
+            console.log("Browser preview mode - skipping Tauri event listeners")
+        }
 
         // 生产环境, 全局取消右键菜单
         // Production environment, cancel right-click menu
@@ -58,23 +96,6 @@ const App = () => {
                 event.preventDefault()
             }
         }
-
-        // 监听事件， 显示翻译结果
-        // Listen to events and display panel
-        await listen<Resp<TransVO>>("show", async (pos) => {
-            Result(pos.payload.data)
-            // 滚动到顶部
-            RESULT.scrollTop = 0
-            // 显示完成后取消临时固定
-            // After displaying, cancel temporary pin
-            await invoke("untmp")
-        })
-
-        // 监听事件，清空翻译结果
-        // Listen to events and clear translation results
-        await listen("reset", async () => {
-            Result(undefined)
-        })
 
         // 调整滚动范围
         // Adjust scroll range
