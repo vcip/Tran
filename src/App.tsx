@@ -14,6 +14,7 @@ const App = () => {
     const [result, Result] = createSignal<TransVO>()
     const [update, Update] = createSignal(false)
     const [host, setHost] = createSignal("https://translate.googleapis.com")
+    const [mode, setMode] = createSignal(true)
     const [showHostInput, setShowHostInput] = createSignal(false)
 
     const close = async () => {
@@ -52,6 +53,11 @@ const App = () => {
             return pos.data
         })
         setHost(currentHost || "https://translate.googleapis.com")
+
+        let currentMode = await invoke<Resp<boolean>>("mode").then((pos) => {
+            return pos.data
+        })
+        setMode(currentMode)
 
         // 监听更改主题事件
         // Listen to change theme events
@@ -162,6 +168,13 @@ const App = () => {
         setShowHostInput(false)
     }
 
+    const toggleMode = async (nextMode: boolean) => {
+        setMode(nextMode)
+        await invoke("set_mode", {
+            mode: nextMode,
+        })
+    }
+
     return (
         <div class="panel" data-tauri-drag-region>
             <div
@@ -252,6 +265,20 @@ const App = () => {
                         <button class="save-host" onClick={saveHost}>
                             OK
                         </button>
+                        <div class="mode-toggle">
+                            <button
+                                classList={{ active: mode() }}
+                                onClick={() => toggleMode(true)}
+                            >
+                                Mirror
+                            </button>
+                            <button
+                                classList={{ active: !mode() }}
+                                onClick={() => toggleMode(false)}
+                            >
+                                Google
+                            </button>
+                        </div>
                     </div>
                 </Show>
             </div>

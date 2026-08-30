@@ -109,6 +109,27 @@
     cursor: pointer;
 }
 
+.mode-toggle {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.mode-toggle button {
+    border: none;
+    border-radius: 4px;
+    background: var(--dict-term-background-color);
+    color: var(--pannel-text-color);
+    font-size: 10px;
+    padding: 4px 6px;
+    cursor: pointer;
+}
+
+.mode-toggle button.active {
+    background: var(--dict-pos-background-color);
+    color: var(--dict-pos-text-color);
+}
+
 .update {
     position: absolute;
     bottom: 10px;

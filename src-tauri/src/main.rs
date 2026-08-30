@@ -72,12 +72,29 @@ async fn host() -> R<String> {
     R::success(config::host())
 }
 
+/// 获取当前模式
+///
+/// Get current mode
+#[tauri::command]
+async fn mode() -> R<bool> {
+    R::success(config::mode())
+}
+
 /// 设置翻译服务地址
 ///
 /// Set translation host
 #[tauri::command]
 async fn set_host(host: String) -> R<()> {
     config::set_host(&host);
+    R::success(())
+}
+
+/// 设置模式
+///
+/// Set mode
+#[tauri::command]
+async fn set_mode(mode: bool) -> R<()> {
+    config::set_mode(mode);
     R::success(())
 }
 
@@ -91,7 +108,7 @@ async fn main() {
         .plugin(tauri_plugin_single_instance::init(|_, _, _| {}))
         .setup(setup::handler)
         .invoke_handler(tauri::generate_handler![
-            copy, open, pin, unpin, untmp, theme, host, set_host
+            copy, open, pin, unpin, untmp, theme, host, set_host, mode, set_mode
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
