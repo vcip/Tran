@@ -5,6 +5,8 @@ import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
 import { createSignal, onMount } from "solid-js"
 import { render } from "solid-js/web"
 
+import { Resp } from "./model/resp"
+
 const Settings = () => {
     let window: any
     try {
@@ -25,12 +27,14 @@ const Settings = () => {
 
     const reload = async () => {
         try {
-            const currentHost = await invoke<string>("host")
-            const currentProxy = await invoke<string>("proxy")
-            setHost(currentHost || "https://translate.googleapis.com")
-            setSavedHost(currentHost || "https://translate.googleapis.com")
-            setProxy(currentProxy || "")
-            setSavedProxy(currentProxy || "")
+            const hostResp = await invoke<Resp<string>>("host")
+            const proxyResp = await invoke<Resp<string>>("proxy")
+            const currentHost = hostResp?.data || "https://translate.googleapis.com"
+            const currentProxy = proxyResp?.data || ""
+            setHost(currentHost)
+            setSavedHost(currentHost)
+            setProxy(currentProxy)
+            setSavedProxy(currentProxy)
         } catch (e) {
             console.log("Browser preview mode - using default values")
         }
