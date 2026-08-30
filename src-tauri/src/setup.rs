@@ -1,6 +1,7 @@
 use std::sync::{atomic::Ordering, Arc};
 
 use mouse_position::mouse_position::Mouse;
+#[cfg(any(target_os = "linux", target_os = "windows", target_os = "macos"))]
 use rdev::{
     Button,
     EventType::{ButtonPress, ButtonRelease, KeyPress, KeyRelease},
@@ -88,6 +89,7 @@ pub fn handler(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
     });
 
     // 监听快捷键 和 鼠标操作
+    #[cfg(any(target_os = "linux", target_os = "windows", target_os = "macos"))]
     std::thread::spawn({
         let key_notifier = key_notifier.clone();
         let mouse_position = mouse_notifier.clone();
