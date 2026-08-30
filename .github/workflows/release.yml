@@ -38,10 +38,11 @@ jobs:
         shell: bash
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            echo "VERSION=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            VERSION="${GITHUB_REF_NAME}"
           else
-            echo "VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
+            VERSION=$(node -p "require('./package.json').version")
           fi
+          echo "VERSION=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Setup node
         uses: actions/setup-node@v6
@@ -117,10 +118,11 @@ jobs:
         shell: bash
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            echo "VERSION=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            VERSION="${GITHUB_REF_NAME}"
           else
-            echo "VERSION=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_OUTPUT"
+            VERSION=$(node -p "require('./package.json').version")
           fi
+          echo "VERSION=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
