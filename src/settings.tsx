@@ -15,6 +15,8 @@ const Settings = () => {
         // Browser preview fallback
         window = {
             addEventListener: () => {},
+            close: async () => console.log("Browser preview - window close"),
+            hide: async () => console.log("Browser preview - window hide"),
         }
     }
     const [host, setHost] = createSignal("https://translate.googleapis.com")
@@ -62,14 +64,14 @@ const Settings = () => {
         setStatus("配置已保存")
         setTimeout(async () => {
             setStatus("")
-            await window.hide()
+            await window.close()
         }, 1000)
     }
 
     const cancel = async () => {
         setHost(savedHost())
         setProxy(savedProxy())
-        await window.hide()
+        await window.close()
     }
 
     const resetHost = () => {
