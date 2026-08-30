@@ -5,33 +5,25 @@ permissions:
 
 on:
   push:
+    branches:
+      - master
     tags:
-      - v*
+      - "v*"
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Publish to GitHub Release"
+        required: false
+        default: "false"
+        type: boolean
 
 jobs:
-  changelog:
-    runs-on: ubuntu-latest
-    outputs:
-      changes: ${{ steps.changelog_reader.outputs.changes }}
-      version: ${{ steps.get_version.outputs.VERSION }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Get version number
-        id: get_version
-        run: |
-          VERSION=$(jq -r '.version' package.json)
-          echo $VERSION
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-      - name: Changelog Reader
-        id: changelog_reader
-        uses: mindsers/changelog-reader-action@v2.2.3
-        with:
-          path: "CHANGELOG.md"
-          version: ${{ steps.get_version.outputs.VERSION }}
-
-  windows:
-    needs: changelog
+  build-windows:
+    name: Build Windows
+    if: ${{ !github.event.pull_request && github.ref_type != 'tag' }}
     strategy:
       fail-fast: false
       matrix:
@@ -40,6 +32,16 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Setup node
         uses: actions/setup-node@v6
@@ -58,6 +60,7 @@ jobs:
           version: latest
 
       - name: Install frontend dependencies
+        shell: bash
         run: |
           pnpm install
           pnpm approve-builds esbuild
@@ -71,7 +74,8 @@ jobs:
       - name: Confirm language
         env:
           MATRIX_LANG: ${{ matrix.lang }}
-        run: deno run -A  script/lang.ts
+        shell: bash
+        run: deno run -A script/lang.ts
 
       - name: Install bun
         uses: oven-sh/setup-bun@v1
@@ -81,22 +85,51 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Built
+      - name: Prepare Windows artifacts
         env:
           MATRIX_LANG: ${{ matrix.lang }}
-          TRAN_VERSION: ${{ needs.changelog.outputs.version }}
+          TRAN_VERSION: ${{ steps.version.outputs.VERSION }}
           TRAN_PLATFORM: "windows"
+        shell: bash
         run: deno run -A script/built-windows.ts
 
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tran-windows-${{ matrix.lang }}-${{ github.run_id }}
+          path: release/*
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    if: ${{ github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true') }}
+    needs: build-windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: tran-windows-*
+          path: release
+          merge-multiple: true
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload release assets
-        id: action_gh_release
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Tran ${{ needs.changelog.outputs.version }}
+          name: Tran ${{ steps.version.outputs.VERSION }}
           body: |
-            ${{ needs.changelog.outputs.changes }}
+            Automated Windows build for ${{ steps.version.outputs.VERSION }}
           files: release/*
           draft: true
           prerelease: false
