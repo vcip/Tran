@@ -64,6 +64,23 @@ async fn theme() -> R<String> {
     R::success(config::theme())
 }
 
+/// 获取当前翻译服务地址
+///
+/// Get current translation host
+#[tauri::command]
+async fn host() -> R<String> {
+    R::success(config::host())
+}
+
+/// 设置翻译服务地址
+///
+/// Set translation host
+#[tauri::command]
+async fn set_host(host: String) -> R<()> {
+    config::set_host(&host);
+    R::success(())
+}
+
 #[tokio::main]
 async fn main() {
     // 全局初始化
@@ -74,7 +91,7 @@ async fn main() {
         .plugin(tauri_plugin_single_instance::init(|_, _, _| {}))
         .setup(setup::handler)
         .invoke_handler(tauri::generate_handler![
-            copy, open, pin, unpin, untmp, theme
+            copy, open, pin, unpin, untmp, theme, host, set_host
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

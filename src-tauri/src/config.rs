@@ -33,6 +33,12 @@ pub struct Config {
     /// HTTP proxy URL, empty means no proxy
     #[serde(default)]
     pub proxy: String,
+
+    /// 翻译服务地址, 为空时使用默认 Google Translate
+    ///
+    /// Translation service host, empty means use the default Google Translate endpoint
+    #[serde(default = "host_default")]
+    pub host: String,
 }
 
 fn mode_default() -> bool {
@@ -45,6 +51,10 @@ fn key_default() -> u8 {
 
 fn theme_default() -> String {
     "dark".to_string()
+}
+
+fn host_default() -> String {
+    "https://translate.googleapis.com".to_string()
 }
 
 pub static CONFIG: Lazy<Mutex<Config>> = Lazy::new(|| Mutex::new(load()));
@@ -114,6 +124,18 @@ pub fn proxy() -> String {
     CONFIG.lock().proxy.clone()
 }
 
+/// 获取翻译服务地址
+///
+/// get translation host
+pub fn host() -> String {
+    let host = CONFIG.lock().host.trim().to_string();
+    if host.is_empty() {
+        host_default()
+    } else {
+        host
+    }
+}
+
 /// 切换模式
 ///
 /// switch mode
@@ -136,4 +158,11 @@ pub fn set_key(key: u8) {
 pub fn set_theme(theme: &str) {
     CONFIG.lock().theme = theme.to_string();
     save().expect("Failed to save config after switch theme");
+}
+/// 设置翻译服务地址
+///
+/// set translation service host
+pub fn set_host(host: &str) {
+    CONFIG.lock().host = host.trim().to_string();
+    save().expect("Failed to save config after switch host");
 }

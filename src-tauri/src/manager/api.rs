@@ -43,7 +43,7 @@ pub async fn translate(content: &str) -> Result<TransVO> {
     let host = if config::mode() {
         mirror::one()
     } else {
-        "https://translate.googleapis.com".to_string()
+        config::host()
     };
     let client = config::proxy().trim().to_string();
     if client.is_empty() {
