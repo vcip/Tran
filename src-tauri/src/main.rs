@@ -3,6 +3,7 @@
 use std::sync::atomic::Ordering;
 
 use resp::R;
+use tauri::Manager;
 
 mod clip;
 mod common;
@@ -115,6 +116,17 @@ async fn set_mode(mode: bool) -> R<()> {
     R::success(())
 }
 
+/// 关闭设置窗口
+///
+/// Close settings window
+#[tauri::command]
+async fn close_settings(app: tauri::AppHandle) -> R<()> {
+    if let Some(window) = app.get_webview_window("settings") {
+        let _ = window.close();
+    }
+    R::success(())
+}
+
 #[tokio::main]
 async fn main() {
     // 全局初始化
@@ -136,7 +148,8 @@ async fn main() {
             set_host,
             set_proxy,
             mode,
-            set_mode
+            set_mode,
+            close_settings
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

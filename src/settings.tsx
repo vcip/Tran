@@ -61,17 +61,25 @@ const Settings = () => {
         }
         setSavedHost(nextHost)
         setSavedProxy(nextProxy)
-        setStatus("配置已保存")
+        setStatus("Setting saved")
         setTimeout(async () => {
             setStatus("")
-            await window.close()
+            try {
+                await invoke("close_settings")
+            } catch (e) {
+                console.error("Failed to close window:", e)
+            }
         }, 1000)
     }
 
     const cancel = async () => {
         setHost(savedHost())
         setProxy(savedProxy())
-        await window.close()
+        try {
+            await invoke("close_settings")
+        } catch (e) {
+            console.error("Failed to close window:", e)
+        }
     }
 
     const resetHost = () => {
@@ -84,8 +92,6 @@ const Settings = () => {
 
     return (
         <div class="settings-window">
-            <div class="settings-header">Tran Settings</div>
-
             <div class="settings-form">
                 <label class="settings-row">
                     <span>Host</span>
