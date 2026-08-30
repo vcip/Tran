@@ -13,6 +13,8 @@ const App = () => {
     const panel = getCurrentWebviewWindow()
     const [result, Result] = createSignal<TransVO>()
     const [update, Update] = createSignal(false)
+    const [host, setHost] = createSignal("https://translate.googleapis.com")
+    const [showHostInput, setShowHostInput] = createSignal(false)
 
     const close = async () => {
         await panel.hide()
@@ -45,6 +47,11 @@ const App = () => {
             return pos.data
         })
         document.documentElement.setAttribute("data-theme", theme)
+
+        let currentHost = await invoke<Resp<string>>("host").then((pos) => {
+            return pos.data
+        })
+        setHost(currentHost || "https://translate.googleapis.com")
 
         // 监听更改主题事件
         // Listen to change theme events
@@ -143,6 +150,18 @@ const App = () => {
         )
     })
 
+    const saveHost = async () => {
+        const value = host().trim()
+        if (!value) {
+            return
+        }
+        await invoke("set_host", {
+            host: value,
+        })
+        setHost(value)
+        setShowHostInput(false)
+    }
+
     return (
         <div class="panel" data-tauri-drag-region>
             <div
@@ -210,6 +229,31 @@ const App = () => {
                         </For>
                     </Match>
                 </Switch>
+            </div>
+            <div class="toolbar">
+                <button
+                    class="settings-toggle"
+                    onClick={() => setShowHostInput((value) => !value)}
+                >
+                    ⚙
+                </button>
+                <Show when={showHostInput()}>
+                    <div class="settings-box">
+                        <input
+                            class="host-input"
+                            value={host()}
+                            onInput={(e) =>
+                                setHost(
+                                    (e.currentTarget as HTMLInputElement).value
+                                )
+                            }
+                            placeholder="https://translate.googleapis.com"
+                        />
+                        <button class="save-host" onClick={saveHost}>
+                            OK
+                        </button>
+                    </div>
+                </Show>
             </div>
             <Show when={update()}>
                 <div

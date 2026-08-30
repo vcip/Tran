@@ -57,6 +57,58 @@
     font-size: 15px;
 }
 
+.toolbar {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    pointer-events: auto;
+}
+
+.settings-toggle {
+    border: none;
+    border-radius: 999px;
+    background: var(--dict-term-background-color);
+    color: var(--pannel-text-color);
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.settings-box {
+    display: flex;
+    flex: 1;
+    gap: 6px;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.host-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--pannel-text-color);
+    outline: none;
+    font-size: 12px;
+    min-width: 0;
+}
+
+.save-host {
+    border: none;
+    border-radius: 4px;
+    background: var(--dict-pos-background-color);
+    color: var(--dict-pos-text-color);
+    font-size: 11px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
 .update {
     position: absolute;
     bottom: 10px;
