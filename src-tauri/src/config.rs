@@ -42,15 +42,18 @@ pub struct Config {
 }
 
 fn mode_default() -> bool {
-    true
+    /// direct mode
+    false
 }
 
 fn key_default() -> u8 {
-    0
+    /// ctrl
+    1
 }
 
 fn theme_default() -> String {
-    "dark".to_string()
+    /// light
+    "light".to_string()
 }
 
 fn host_default() -> String {
